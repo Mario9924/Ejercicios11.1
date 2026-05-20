@@ -1,14 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+
 package ejercicios111;
 
 import java.sql.*;
 
 /**
  *
- * @author Mario_
+ * @author Mario Gutiérrez
+ * @see
+ * @version 1.0
  */
 public class Plantilla {
 
@@ -16,7 +15,7 @@ public class Plantilla {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // Declaración de variables
         String url = "jdbc:mysql://localhost:3307/BASE-DE-DATOS";
         String user = "root";
         String pass = "";
@@ -24,7 +23,7 @@ public class Plantilla {
                 Connection conn = DriverManager.getConnection(url, user, pass);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery("CONSULTA A LA BASE DE DATOS");
-                ){
+            ){
 
             //se carga la clase del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
