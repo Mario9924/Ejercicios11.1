@@ -21,7 +21,7 @@ public class Plantilla {
         String pass = "";
         try (
                 Connection conn = DriverManager.getConnection(url, user, pass);
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet rs = stmt.executeQuery("CONSULTA A LA BASE DE DATOS"); // USAR PARA CONSULTAS
                 
             ){

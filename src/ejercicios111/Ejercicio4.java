@@ -25,7 +25,7 @@ public class Ejercicio4 {
         String pass = "";
         try (
                 Connection conn = DriverManager.getConnection(url, user, pass);
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb"); // USAR PARA CONSULTAS
                 
             ){
@@ -33,7 +33,36 @@ public class Ejercicio4 {
             //se carga la clase del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
             
+            // Comienza el ejercicio
             
+            // - El nombre y el poder del primer personaje.
+            
+            rs.first();
+            System.out.println("El nombre del primer personaje es: " + rs.getString("Nombre") + " y su poder es de " + rs.getString("Poder"));
+            
+            // - El poder del 44º personaje
+            
+            rs.absolute(44);
+            System.out.println("El nombre del primer personaje es: " + rs.getString("Nombre") + " y su poder es de " + rs.getString("Poder"));
+                
+            // - El personaje con más poder de todos, con todos sus valores.
+            int maxPoder = 0;
+            int posicionPersonajeMaxPoder = 0;
+            
+            // Volvemos al inicio para poder recorrer toda la tabla
+            rs.beforeFirst();
+            while (rs.next()){
+                int poder = rs.getInt("poder");
+                int posicion = rs.getInt("id");
+                if (poder > maxPoder){
+                    maxPoder = poder;
+                    posicionPersonajeMaxPoder = posicion;
+                }
+            }
+            
+            
+            rs.absolute(posicionPersonajeMaxPoder);  
+            System.out.println("El personaje con más poder es " + rs.getString("nombre") + " con el poder " + rs.getString("poder"));
             
         }  catch(SQLException sqlex){
             System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
