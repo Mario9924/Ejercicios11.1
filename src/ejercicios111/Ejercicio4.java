@@ -24,9 +24,26 @@ public class Ejercicio4 {
         String url = "jdbc:mysql://localhost:3307/frikadas";
         String user = "root";
         String pass = "";
+        int maxPoder = 0;
+        int posicionPersonajeMaxPoder = 0;
+        int minPoder = 999;
+        int posicionPersonajeMinPoder = 0;
+        int maxPoderTierra = 0;
+        int posicionMaxPoderTierra = 0;
+        int mediaPoderGlobal = 0;
+        int numeroLineas = 0;
+        String nombresPersonajes = "";
+        boolean primerPersonaje = false;
+        int mediaPoder = 0;
+        HashMap<String, Integer> personajesProcedencias = new HashMap<>();
+        String[] arrayNombres = null;
+        
+        
         try (
-                Connection conn = DriverManager.getConnection(url, user, pass); Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb"); // USAR PARA CONSULTAS
-                ) {
+                Connection conn = DriverManager.getConnection(url, user, pass); 
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); 
+                ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb"); // USAR PARA CONSULTAS
+            ) {
 
             //se carga la clase del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -41,9 +58,6 @@ public class Ejercicio4 {
             System.out.println("El nombre del primer personaje es: " + rs.getString("Nombre") + " y su poder es de " + rs.getString("Poder"));
 
             // - El personaje con más poder de todos, con todos sus valores.
-            int maxPoder = 0;
-            int posicionPersonajeMaxPoder = 0;
-
             // Volvemos al inicio para poder recorrer toda la tabla
             rs.beforeFirst();
             while (rs.next()) {
@@ -59,8 +73,6 @@ public class Ejercicio4 {
             System.out.println("El personaje con más poder es " + rs.getString("nombre") + " con el poder " + rs.getString("poder"));
 
             // - El personaje con menos poder de entre los que sí están activos para combatir(Activo = 1).
-            int minPoder = 999;
-            int posicionPersonajeMinPoder = 0;
             rs.beforeFirst();
             while (rs.next()) {
                 int poder = rs.getInt("poder");
@@ -75,8 +87,6 @@ public class Ejercicio4 {
             System.out.println("El personaje con menos poder es " + rs.getString("nombre") + " con el poder " + rs.getString("poder"));
 
             // - El personaje nacido en La Tierra que tiene más poder.
-            int maxPoderTierra = 0;
-            int posicionMaxPoderTierra = 0;
             rs.beforeFirst();
             while (rs.next()) {
                 String planeta = rs.getString("procedencia");
@@ -98,8 +108,7 @@ public class Ejercicio4 {
             // - Los 10 personajes que tienen más poder.
             System.out.println("\n\nA continuación mostramos los personajes cuyo poder es mayor a la media: ");
             // Primero calculamos la media de poder para todos los personajes
-            int mediaPoderGlobal = 0;
-            int numeroLineas = 0;
+
             rs.beforeFirst();
 
             while (rs.next()) {
@@ -107,7 +116,7 @@ public class Ejercicio4 {
                 numeroLineas++;
             }
 
-            int mediaPoder = mediaPoderGlobal / numeroLineas;
+            mediaPoder = mediaPoderGlobal / numeroLineas;
 
             System.out.println("La media de poder es: " + mediaPoder);
 
@@ -122,7 +131,7 @@ public class Ejercicio4 {
             // - El número de personajes de cada una de las procedencias.
             System.out.println("\n\nEl listado de procdencias es el siguiente: ");
 
-            HashMap<String, Integer> personajesProcedencias = new HashMap<>();
+            
 
             rs.beforeFirst();
             while (rs.next()) {
@@ -140,14 +149,12 @@ public class Ejercicio4 {
             }
 
             // - Todos los nombres de los personajes en orden alfabético.
-            
             System.out.println("\n\nMostramos los nombres de los personajes ordenados alfabéticamente: \n");
-            String nombresPersonajes = "";
-            boolean primerPersonaje = false;
+
             // Primero necesito obtener de algún modo los nombres de los personajes
             rs.beforeFirst();
             while (rs.next()) {
-                if (primerPersonaje == false){
+                if (primerPersonaje == false) {
                     // Si no hago esto el comienzo siempre será ;nombre1;nombre2 Provocando errores al continuar más adelante
                     nombresPersonajes += rs.getString("nombre");
                     primerPersonaje = true;
@@ -155,9 +162,9 @@ public class Ejercicio4 {
                     nombresPersonajes += ";" + rs.getString("nombre");
                 }
             }
-            
+
             // Una vez tengamos los nombres, separo los valores por el delimitador (se podría haber guardado en un arrayList directamente)
-            String[] arrayNombres = nombresPersonajes.split(";");
+            arrayNombres = nombresPersonajes.split(";");
             /*
                 Un String es una cadena de char, el cuál tiene un valor en la tabla Ascii
                 Si aprovechamos esto, tenemos que la primera letra de cada nombre tiene un valor distinto (en referencia al Ascii)
@@ -167,7 +174,7 @@ public class Ejercicio4 {
                     compararlo con el resto de nombres (como si estuviesemos ordenando números)
             
                 El resultado final es un array con los nombres de los personajes pero ordenados, sin necesidad de indicarlo en la sentencia SQL
-            */
+             */
             for (int i = 1; i < arrayNombres.length; i++) {
                 String auxString = arrayNombres[i];
                 int j = i - 1;
@@ -179,8 +186,8 @@ public class Ejercicio4 {
                 arrayNombres[j + 1] = auxString;
             }
 
-            for (int i = 0; i < arrayNombres.length; i++) {
-                System.out.println(arrayNombres[i]);
+            for (String arrayNombre : arrayNombres) {
+                System.out.println(arrayNombre);
             }
 
         } catch (SQLException sqlex) {
