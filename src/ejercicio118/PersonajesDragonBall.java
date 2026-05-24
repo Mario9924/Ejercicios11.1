@@ -115,7 +115,7 @@ public class PersonajesDragonBall {
         this.poder = poder;
     }
 
-    public boolean isActivo() {
+    public boolean getActivo() {
         return activo;
     }
 
@@ -251,8 +251,63 @@ public class PersonajesDragonBall {
             } catch (Exception e) {
                 System.out.println("Error: " + e);
             }
-        } else {
+        }   else {
             System.out.println("Lo sentimos pero el personaje no existe...");
+        }
+    }
+    
+    /**
+     * Este método permite actualizar los datos del personaje almacenado en la BD con los datos del objeto con su mismo nombre.
+     * Para poder funcionar el personaje ha de existir
+     * @param personajeIn nombre del personaje
+     */
+    public void actualizarDatosPersonaje(PersonajesDragonBall personajeIn){
+        if (comprobarExistenciaPersonaje(personajeIn.getNombre())){
+            System.out.println("El personaje existe!!");
+            // Conectamos con nuestra base de datos y comenzamos a obtener los datos
+            String url = "jdbc:mysql://localhost:3307/frikadas";
+            String user = "root";
+            String pass = "";
+            try (
+                    Connection conn = DriverManager.getConnection(url, user, pass); 
+                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb" ); // USAR PARA CONSULTAS
+                    ) {
+
+                //se carga la clase del Driver
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                int lineaPersonaje = 0;
+                while(rs.next()){
+                    if (rs.getString("nombre").equalsIgnoreCase(personajeIn.getNombre())){
+                        // terminado esto, no nos interesa sacar más información
+                        break;
+                    } else {
+                        lineaPersonaje++;
+                    }
+                }
+                
+                // Nos vamos a la línea del personaje
+                rs.absolute(lineaPersonaje);
+                
+                // Modificamos todos los datos
+                rs.updateString(2, personajeIn.getNombre());
+                rs.updateInt(3, personajeIn.getPoder());
+                rs.updateString(4, personajeIn.getProcedencia());
+                if (personajeIn.getActivo()){
+                    rs.updateInt(5, 1);
+                } else {
+                    rs.updateInt(5,0);
+                }
+                // Una vez terminamos, realizamos el Update correspondiente
+                rs.updateRow();
+                System.out.println("Se han modificado los datos del personaje en la BD");
+            } catch (SQLException sqlex) {
+                System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
+        } else {
+            System.out.println("El personaje no existe, comprueba que el nombre sea correcto");
         }
     }
 }
