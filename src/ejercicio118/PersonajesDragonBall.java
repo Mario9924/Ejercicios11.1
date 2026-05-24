@@ -127,7 +127,11 @@ public class PersonajesDragonBall {
         Métodos propios de la clase
     */
     
-    
+    /**
+     * Esta función permite comprobar si el personaje existe en la BD o no
+     * @param nombrePersonajeIn (String) nombre del Personaje
+     * @return true si existe. False si no existe
+     */
     private boolean comprobarExistenciaPersonaje(String nombrePersonajeIn){
         boolean resultado = false;
         // Conectamos con nuestra base de datos y comenzamos a obtener los datos
@@ -159,7 +163,10 @@ public class PersonajesDragonBall {
         return resultado;
     }
     
-    
+    /**
+     * Este método permite el borrado de un personaje siempre y cuando este, exista.
+     * @param personajeIn  Nombre del personaje a eliminar
+     */
     public void borrarPersonaje(PersonajesDragonBall personajeIn){
         if (comprobarExistenciaPersonaje(personajeIn.getNombre())){
             System.out.println("El personaje existe por lo que podemos eliminarlo");
@@ -203,5 +210,49 @@ public class PersonajesDragonBall {
         }
     }
     
-    
+    /**
+     * Este método permite igualar los atributos del objeto actual con los que se tengan en la BD si el personaje existe
+     * @param personajeIn nombre del personaje que vamos a consultar en la BD
+     */
+    public void cargarAtributosPersonaje(PersonajesDragonBall personajeIn){
+        if (comprobarExistenciaPersonaje(personajeIn.getNombre())){
+            System.out.println("Personaje encontrado! Pasamos a modificar los atributos");
+            // Conectamos con nuestra base de datos y comenzamos a obtener los datos
+            String url = "jdbc:mysql://localhost:3307/frikadas";
+            String user = "root";
+            String pass = "";
+            try (
+                    Connection conn = DriverManager.getConnection(url, user, pass); 
+                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb" ); // USAR PARA CONSULTAS
+                    ) {
+
+                //se carga la clase del Driver
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                
+                while(rs.next()){
+                    if (rs.getString("nombre").equalsIgnoreCase(personajeIn.getNombre())){
+                        // Volcamos los datos de la BD al objeto
+                        personajeIn.setNombre(rs.getString("nombre"));
+                        personajeIn.setProcedencia(rs.getString("procedencia"));
+                        personajeIn.setPoder(rs.getInt("poder"));
+                        if (rs.getInt("activo")==0){
+                            personajeIn.setActivo(false);
+                        } else {
+                            personajeIn.setActivo(true);
+                        }
+                        // terminado esto, no nos interesa sacar más información
+                        break;
+                    }
+                }
+
+            } catch (SQLException sqlex) {
+                System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
+        } else {
+            System.out.println("Lo sentimos pero el personaje no existe...");
+        }
+    }
 }
