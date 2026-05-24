@@ -1,6 +1,6 @@
 package ejercicios111;
 
-import com.mysql.cj.conf.PropertyKey;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -32,7 +32,6 @@ public class Ejercicio6 {
         int posicionUltimoPersonaje = 0;
         int campoIn = 0;
         String datoIn = "";
-        boolean controlSwitch = true;
         try (
                 Connection conn = DriverManager.getConnection(url, user, pass); 
                 Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); 
