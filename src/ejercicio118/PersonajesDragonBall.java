@@ -270,7 +270,7 @@ public class PersonajesDragonBall {
             String pass = "";
             try (
                     Connection conn = DriverManager.getConnection(url, user, pass); 
-                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); 
+                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); 
                     ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb" ); // USAR PARA CONSULTAS
                     ) {
 
@@ -308,6 +308,54 @@ public class PersonajesDragonBall {
             }
         } else {
             System.out.println("El personaje no existe, comprueba que el nombre sea correcto");
+        }
+    }
+    
+    /**
+     * Este método permite guardar a un personaje nuevo si no existe en la BD, en caso de existir, se actualiza la información
+     *  con la del estado del objeto sobre la que se ejecuta el método
+     * @param personajeIn  nombre del personaje
+     */
+    public void guardarPersonaje(PersonajesDragonBall personajeIn){
+        if (comprobarExistenciaPersonaje(personajeIn.getNombre())){
+            System.out.println("El personaje existe así que vamos a actualizar sus datos:");
+            this.actualizarDatosPersonaje(personajeIn);
+        } else {
+            System.out.println("El personaje no existe, pasamos a incluirle en la Base de Datos");
+            // Conectamos con nuestra base de datos y comenzamos a obtener los datos
+            String url = "jdbc:mysql://localhost:3307/frikadas";
+            String user = "root";
+            String pass = "";
+            try (
+                    Connection conn = DriverManager.getConnection(url, user, pass); 
+                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM personajesdb" ); // USAR PARA CONSULTAS
+                    ) {
+
+                //se carga la clase del Driver
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                
+                
+                // Nos vamos a la línea reservadad por Java para introducir el dato
+                rs.moveToInsertRow();
+                
+                // Modificamos todos los datos
+                rs.updateString(2, personajeIn.getNombre());
+                rs.updateInt(3, personajeIn.getPoder());
+                rs.updateString(4, personajeIn.getProcedencia());
+                if (personajeIn.getActivo()){
+                    rs.updateInt(5, 1);
+                } else {
+                    rs.updateInt(5,0);
+                }
+                // Una vez terminamos, realizamos el insert correspondiente
+                rs.insertRow();
+                System.out.println("Se ha añadido el personaje la BD");
+            } catch (SQLException sqlex) {
+                System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
         }
     }
 }
