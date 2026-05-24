@@ -34,7 +34,7 @@ public class PersonajesDragonBall {
      * @param poderIn (int) poder del Personaje
      * @param activoIn (boolean)si el personaje está activo o no
      */
-    public PersonajesDragonBall(String nombreIn, String procedenciaIn, int poderIn, boolean activoIn){
+    public PersonajesDragonBall(String nombreIn, int poderIn,  String procedenciaIn, boolean activoIn){
         this.nombre = nombreIn;
         this.procedencia = procedenciaIn;
         this.poder = poderIn;
@@ -46,7 +46,7 @@ public class PersonajesDragonBall {
      * @param nombreBdIn nombre de la BD desde la que vamos a obtener la información
      * @param nombrePersonajeIn  nombre del personaje que ha de existir dentro de la BD
      */
-    public PersonajesDragonBall(String nombreBdIn, String nombrePersonajeIn){
+    public PersonajesDragonBall(String nombrePersonajeIn, String nombreBdIn){
         if (comprobarExistenciaPersonaje(nombrePersonajeIn)){
             System.out.println("El personaje existe, pasamos a rescatar la información de dicho personaje");
             // Conectamos con nuestra base de datos y comenzamos a obtener los datos
@@ -122,6 +122,21 @@ public class PersonajesDragonBall {
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
+    
+   
+    @Override
+    public String toString(){
+        String informacion  = "";
+        informacion += "Soy " + this.getNombre() + " cuyo poder es de " + this.getPoder() + "\nProcedo de " + this.getProcedencia() 
+                + " Y mi estado es:";
+        if (this.getActivo()){
+            informacion += " activo";
+        } else {
+            informacion += " inactivo";
+        }
+        return informacion;
+    }
+    
     
     /*
         Métodos propios de la clase
@@ -276,7 +291,7 @@ public class PersonajesDragonBall {
 
                 //se carga la clase del Driver
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                int lineaPersonaje = 0;
+                int lineaPersonaje = 1; // La fila siempre empieza en 1 NO EN 0 como cabría esperar
                 while(rs.next()){
                     if (rs.getString("nombre").equalsIgnoreCase(personajeIn.getNombre())){
                         // terminado esto, no nos interesa sacar más información
