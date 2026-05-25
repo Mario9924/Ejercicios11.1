@@ -49,39 +49,42 @@ public class PersonajesDragonBall {
     public PersonajesDragonBall(String nombrePersonajeIn, String nombreBdIn){
         if (comprobarExistenciaPersonaje(nombrePersonajeIn)){
             System.out.println("El personaje existe, pasamos a rescatar la información de dicho personaje");
-            // Conectamos con nuestra base de datos y comenzamos a obtener los datos
-            String url = "jdbc:mysql://localhost:3307/frikadas";
-            String user = "root";
-            String pass = "";
-            try (
-                    Connection conn = DriverManager.getConnection(url, user, pass); 
-                    Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); 
-                    ResultSet rs = stmt.executeQuery("SELECT * FROM " + nombreBdIn); // USAR PARA CONSULTAS
-                    ) {
+            if (nombreBdIn.equalsIgnoreCase("personajesdb")){
+                // Conectamos con nuestra base de datos y comenzamos a obtener los datos
+                String url = "jdbc:mysql://localhost:3307/frikadas";
+                String user = "root";
+                String pass = "";
+                try (
+                        Connection conn = DriverManager.getConnection(url, user, pass); Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery("SELECT * FROM " + nombreBdIn); // USAR PARA CONSULTAS
+                        ) {
 
-                //se carga la clase del Driver
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                
-                while(rs.next()){
-                    if (rs.getString("nombre").equalsIgnoreCase(nombrePersonajeIn)){
-                        // Volcamos los datos de la BD al objeto
-                        this.nombre = rs.getString("nombre");
-                        this.procedencia = rs.getString("procedencia");
-                        this.poder = rs.getInt("poder");
-                        if (rs.getInt("activo")==0){
-                            this.activo = false;
-                        } else {
-                            this.activo = true;
+                    //se carga la clase del Driver
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+
+                    while (rs.next()) {
+                        if (rs.getString("nombre").equalsIgnoreCase(nombrePersonajeIn)) {
+                            // Volcamos los datos de la BD al objeto
+                            this.nombre = rs.getString("nombre");
+                            this.procedencia = rs.getString("procedencia");
+                            this.poder = rs.getInt("poder");
+                            if (rs.getInt("activo") == 0) {
+                                this.activo = false;
+                            } else {
+                                this.activo = true;
+                            }
+                            // terminado esto, no nos interesa sacar más información
+                            break;
                         }
-                        // terminado esto, no nos interesa sacar más información
-                        break;
                     }
-                }
 
-            } catch (SQLException sqlex) {
-                System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
-            } catch (Exception e) {
-                System.out.println("Error: " + e);
+                } catch (SQLException sqlex) {
+                    System.err.println("Ha habido un error a la hora de trabajar con la base de datos: " + sqlex);
+                } catch (Exception e) {
+                    System.out.println("Error: " + e);
+                }
+            } else {
+                System.out.println("El nombre de la tabla no es correcto, revisalo por favor."
+                        + "\nEste objeto tendrá sus valores como nulos por defecto");
             }
         } else {
             System.out.println("Lo sentimos, pero el personaje al que haces referencia no existe");
